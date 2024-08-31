@@ -14,6 +14,7 @@
 #include <learnopengl/model.h>
 
 #include <iostream>
+#include <utility>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -51,7 +52,7 @@ struct PointLight {
 };
 
 struct ProgramState {
-    glm::vec3 clearColor = glm::vec3(0.3, 0.3, 0.3);
+    glm::vec3 clearColor = glm::vec3(0.9, 0.7, 0.7);
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
@@ -95,6 +96,24 @@ void ProgramState::LoadFromFile(std::string filename) {
            >> camera.Front.z;
     }
 }
+
+class Object {
+    Model model;
+    glm::vec3 position;
+    float scale;
+
+public:
+    Object(Model model, const glm::vec3 &position, float scale = 1.0f):
+            model(std::move(model)), position(position), scale(scale) {}
+
+    void draw(Shader &shader) {
+        glm::mat4 modelMat = glm::mat4(1.0f);
+        modelMat = glm::translate(modelMat, position);
+        modelMat = glm::scale(modelMat, glm::vec3(scale));
+        shader.setMat4("model", modelMat);
+        model.Draw(shader);
+    }
+};
 
 ProgramState *programState;
 
@@ -164,7 +183,58 @@ int main() {
 
     // load models
     // -----------
-    Model ourModel("resources/objects/stolica/stolica.gltf");
+    Object soba(
+            {"resources/objects/soba/scene.gltf"},
+            {0, 0, 0}
+    );
+    Object sto(
+            {"resources/objects/sto/scene.gltf"},
+            {-3, 0, -3}
+    );
+    Object krevet(
+            {"resources/objects/krevet/krevet.gltf"},
+            {1.3, -0.04, -1.4}
+    );
+    Object polica1(
+            {"resources/objects/polica/polica.gltf"},
+            {2.3, 0, 2.7}
+    );
+
+    Object polica_iznad_stola(
+            {"resources/objects/polica2/polica2.gltf"},
+            {-2.9, 2, -3}
+    );
+    Object polica_ormar(
+            {"resources/objects/polica3/scene.gltf"},
+            {-0.5, 0, 3.1}
+    );
+    Object police_cvece(
+            {"resources/objects/police_cvece_/scene.gltf"},
+            {-0.5, 1.5, 3.2 }
+    );
+    Object slike(
+            {"resources/objects/slike/scene.gltf"},
+            {2.62, 2.3, -2.2}
+    );
+    Object zeka(
+            {"resources/objects/zeka/scene.gltf"},
+            {0.25, 1.31, 3.1},
+            0.7
+    );
+    Object stolica(
+            {"resources/objects/stolica/stolica.gltf"},
+            {-3.2, 0, -2.2}
+    );
+    Object olovke(
+            {"resources/objects/olovke/scene.gltf"},
+            {-3.5, 1.23, -3}
+    );
+    Object biljka(
+            {"resources/objects/biljka/scene.gltf"},
+            {-2, 1.23, -3}
+    );
+
+
 //    ourModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
@@ -221,12 +291,18 @@ int main() {
         ourShader.setMat4("view", view);
 
         // render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               programState->backpackPosition); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        ourModel.Draw(ourShader);
+        soba.draw(ourShader);
+        sto.draw(ourShader);
+        krevet.draw(ourShader);
+        polica1.draw(ourShader);
+        polica_iznad_stola.draw(ourShader);
+        polica_ormar.draw(ourShader);
+        police_cvece.draw(ourShader);
+        slike.draw(ourShader);
+        zeka.draw(ourShader);
+        stolica.draw(ourShader);
+        olovke.draw(ourShader);
+        biljka.draw(ourShader);
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
@@ -239,7 +315,7 @@ int main() {
         glfwPollEvents();
     }
 
-    programState->SaveToFile("resources/program_state.txt");
+//    programState->SaveToFile("resources/program_state.txt");
     delete programState;
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
