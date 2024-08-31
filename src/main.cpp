@@ -241,11 +241,16 @@ int main() {
     );
     Object olovke(
             {"resources/objects/olovke/scene.gltf"},
-            {-3.5, 1.23, -3}
+            {-3, 1.23, -3}
     );
     Object biljka(
             {"resources/objects/biljka/scene.gltf"},
             {-2, 1.23, -3}
+    );
+    Object lampa(
+            {"resources/objects/lampa/untitled.gltf"},
+            {-4.2, 1.23, -3.4},
+            2
     );
 
 
@@ -317,6 +322,7 @@ int main() {
         stolica.draw(ourShader);
         olovke.draw(ourShader);
         biljka.draw(ourShader);
+        lampa.draw(ourShader);
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
