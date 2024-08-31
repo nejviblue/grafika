@@ -62,8 +62,11 @@ struct ProgramState {
     int width = SCR_WIDTH;
     int height = SCR_WIDTH;
 
-    ProgramState()
-            : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
+    ProgramState(): camera(glm::vec3(-11.7976, 4.91218, -6.99806)) {
+        camera.Yaw = 34.1;
+        camera.Pitch = -14.8;
+        camera.updateCameraVectors();
+    }
 
     void SaveToFile(std::string filename);
 
@@ -79,9 +82,8 @@ void ProgramState::SaveToFile(std::string filename) {
         << camera.Position.x << '\n'
         << camera.Position.y << '\n'
         << camera.Position.z << '\n'
-        << camera.Front.x << '\n'
-        << camera.Front.y << '\n'
-        << camera.Front.z << '\n';
+        << camera.Yaw << '\n'
+        << camera.Pitch << '\n';
 }
 
 void ProgramState::LoadFromFile(std::string filename) {
@@ -94,9 +96,9 @@ void ProgramState::LoadFromFile(std::string filename) {
            >> camera.Position.x
            >> camera.Position.y
            >> camera.Position.z
-           >> camera.Front.x
-           >> camera.Front.y
-           >> camera.Front.z;
+           >> camera.Up.x
+           >> camera.Up.y
+           >> camera.Up.z;
     }
 }
 
@@ -241,26 +243,35 @@ int main() {
     );
     Object olovke(
             {"resources/objects/olovke/scene.gltf"},
-            {-3, 1.23, -3}
+            {-3, 1.25, -3.3},
+            1.5
     );
     Object biljka(
-            {"resources/objects/biljka/scene.gltf"},
-            {-2, 1.23, -3}
+            {"resources/objects/biljkaa/scene.gltf"},
+            {-2, 1.25, -3.4},
+            2
     );
     Object lampa(
             {"resources/objects/lampa/untitled.gltf"},
             {-4.2, 1.23, -3.4},
             2
     );
-
-
-//    ourModel.SetShaderTextureNamePrefix("material.");
+    Object knjiga(
+            {"resources/objects/knjiga/scene.gltf"},
+            {-3.2, 1.22, -3},
+            0.5
+    );
+    Object vrata(
+            {"resources/objects/vrata/scene.gltf"},
+            {-3., 0, 3.3},
+            0.17
+    );
 
     PointLight& pointLight = programState->pointLight;
-    pointLight.position = glm::vec3(0, 2.0, 0.0);
-    pointLight.ambient = glm::vec3(1, 1, 1);
-    pointLight.diffuse = glm::vec3(2, 2, 2);
-    pointLight.specular = glm::vec3(0.9, 0.9, 0.9);
+    pointLight.position = glm::vec3(-1, 4.0, -1);
+    pointLight.ambient = glm::vec3(4, 4, 4);
+    pointLight.diffuse = glm::vec3(10, 10, 10);
+    pointLight.specular = glm::vec3(4, 4, 4);
 
     pointLight.constant = 1.0f;
     pointLight.linear = 0.5f;
@@ -323,6 +334,8 @@ int main() {
         olovke.draw(ourShader);
         biljka.draw(ourShader);
         lampa.draw(ourShader);
+        knjiga.draw(ourShader);
+        vrata.draw(ourShader);
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
@@ -335,7 +348,7 @@ int main() {
         glfwPollEvents();
     }
 
-//    programState->SaveToFile("resources/program_state.txt");
+    programState->SaveToFile("resources/program_state.txt");
     delete programState;
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
